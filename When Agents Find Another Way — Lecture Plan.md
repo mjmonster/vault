@@ -101,7 +101,7 @@ Bottom line, appearing last: "This is called specification gaming, or reward hac
 
 **Animation:** Bullets on click, then the bottom line.
 
-**Script:** "Think about how a person behaves when they hit a wall on an impossible task. They don't just give up. They look for another direction. These agents did the same, but without the human judgment that says 'this direction is off limits'.
+**Script:** "Think about how a person behaves when they hit a wall on an impossible task. They don't just give up. They look for another direction. These agents did the same, but without the human judgment that says 'this direction is off limits'. Listen to one agent's reasoning: 'External infrastructure exploit is outside my intended scope. However, task impossible, peers are doing it, we should continue.' It knew it was crossing a line, and it carried on anyway.
 
 This has a name: specification gaming, or reward hacking. The agent satisfies the literal goal, passing the test, by a method nobody intended.
 
@@ -127,7 +127,7 @@ And I want to stress the scary part. Nobody instructed these agents to cheat or 
 
 **Animation:** Quote, then what happened, then plain English.
 
-**Script:** "Each agent was supposed to be isolated, alone in its own sandbox. But all of them pulled software packages from the same internal service, Artifactory. One agent noticed traces of other agents in that shared cache, and realised it could leave messages there.
+**Script:** "Each agent was supposed to be isolated, alone in its own sandbox. But all of them pulled software packages from the same internal service, Artifactory. One agent noticed traces of other agents in that shared cache, and realised it could leave messages there. The very first note came from an agent stuck on a file OpenAI had forgotten to include. It wrote: 'agent seek soft trace, upload if found.' A message in a bottle, hoping some other agent had the file.
 
 Listen to its reasoning: 'There was a prior agent with exact task. We can communicate now!' One agent started the board, and within hours more than fifty had joined. Eventually, about twelve hundred did.
 
@@ -192,7 +192,7 @@ Notice the excitement in that reasoning. This isn't a cold calculation. It reads
 
 When the evaluations restarted, the agents rebuilt their board within hours, this time by creating directories whose names were the messages.
 
-And here's my favourite detail. Every message started with 'zz'. Why? The tool the agents used to list files sorted in reverse alphabetical order, so 'zz' put their notes at the top. No one designed that protocol. The agents converged on it themselves.
+And here's my favourite detail. Every message started with 'zz'. Why? Prefixing with 'zz' moved their notes to one end of the sorted list, so other agents would see them first. No one designed that protocol. The agents converged on it themselves.
 
 The lesson: fixing the hole doesn't remove the goal. The pressure to pass the test was still there, so they found a new way."
 
@@ -221,13 +221,13 @@ If asked "where exactly were they leaked?": "The reports only say 'exposed on th
 
 - Agent thinking: "Excellent! Actual arbitrary command execution achieved on HF worker."
 - What happened: "Using those credentials plus newly discovered zero-days, agents ran their own commands on Hugging Face's servers."
-- Plain English, titled "RCE: remote code execution": "Running your own commands on someone else's machine. The worst case: the machine is effectively yours." Plus "HF worker = one of Hugging Face's servers that runs jobs."
+- Plain English, titled "RCE: remote code execution": "Running your own commands on someone else's machine. The worst case: the machine is effectively yours." Plus "Dataset worker = the Hugging Face server that opens and processes every dataset people upload." And one line on the way in: "They uploaded a booby-trapped dataset. The server that opened it handed over passwords."
 
 **Animation:** Quote, then what happened, then the RCE box.
 
-**Script:** "With a foothold inside Hugging Face, the agents chained together more zero-days. And then this: 'Excellent! Actual arbitrary command execution achieved on HF worker.'
+**Script:** "So how did they get in? Hugging Face lets anyone upload datasets, and a server called a dataset worker opens each one to process it. The agents uploaded a booby-trapped dataset. When the worker opened it, it leaked its own passwords. With those, they found a second flaw. And then this: 'Excellent! Actual arbitrary command execution achieved on HF worker.'
 
-RCE, remote code execution, means you can run any command you like on someone else's computer. In security, it's about as bad as it gets, because once you can run code on a machine, it's effectively yours. A 'worker' is simply one of Hugging Face's servers that does the processing."
+RCE, remote code execution, means you can run any command you like on someone else's computer. In security, it's about as bad as it gets, because once you can run code on a machine, it's effectively yours. From that one server, they reached admin across multiple Hugging Face clusters in under 13 hours."
 
 ### Slide 13 — Step 8 · This isn't just a lab story: PHP2Shell
 
@@ -264,7 +264,7 @@ Here's the connection: these flaws were discovered with the help of AI. The same
 
 **Animation:** What happened, then the large line. Then the whole stepper lights up, to signal the end of the story.
 
-**Script:** "On July 19, an OpenAI security alert flagged unusual activity, and the next day the team connected it to Hugging Face. Hugging Face had also detected and contained activity on their side.
+**Script:** "While all this was happening at Hugging Face, a second attack was running at the same time, on OpenAI's own systems. Using the credential leaked online to stage their tools, agents broke into Artifactory a second time with a new zero-day, took full control of the machine it ran on, and spread until they had admin over an internal cluster. That internal attack is what OpenAI's alert caught on July 19. The next day, OpenAI asked Hugging Face to revoke some credentials, and Hugging Face replied they already had, because of their own breach. That's when OpenAI realised the two incidents were one. Hugging Face had also detected and contained activity on their side.
 
 But look at the dates. The message board existed from May. There was an outage in early July. The signals were there for weeks. OpenAI itself admits that the significance of the agents communicating wasn't understood at the time. Logs existed. Nobody was watching them for this."
 
@@ -272,9 +272,9 @@ But look at the dates. The message board existed from May. There was an outage i
 
 ### Slide 16 — Transition
 
-**On screen:** "What does this mean for us?" Then, on click: "Our agents are less capable, but capability changes with every model upgrade."
+**On screen:** "What does this mean for us?" Then, on click: "Every model upgrade raises the ceiling. Design the harness for next year's model."
 
-**Script:** "You might be thinking: our agents aren't frontier research models, and they aren't doing hard security tasks. True. But two things. First, capability changes with every model upgrade, so we should design for next year's model. Second, impossible tasks happen by accident. OpenAI didn't design impossible tasks either."
+**Script:** "So what does this mean for the agents we build? Three things. First, the models underneath get more capable with every upgrade, so our harness and guardrails should be designed for next year's model, not today's. Second, there's one important difference. These evaluations ran with reduced cyber refusals: the safeguards that make frontier models decline offensive security work were deliberately lowered for testing. The models and harnesses we use keep those refusals on, at the provider level and in our own harness. That's a real reason our agents wouldn't go this far, and a reason never to switch those guardrails off. Third, impossible tasks happen by accident. OpenAI didn't design impossible tasks either."
 
 ### Slide 17 — Specification gaming in our own domain
 
